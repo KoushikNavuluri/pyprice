@@ -1,20 +1,26 @@
 {
   "name": "pyprice",
-  "version": "1.2.0",
-  "description": "Unified Quick-Commerce Intelligence Engine and Unofficial API Suite for Zepto, Swiggy Instamart, and Blinkit",
+  "version": "1.4.0",
+  "description": "Unified Quick-Commerce Intelligence Engine and Unofficial API Suite for Zepto, Swiggy Instamart, Blinkit, BigBasket (bbnow), and JioMart",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start:zepto": "node zepto/src/server.js",
     "start:instamart": "node instamart/src/server.js",
     "start:blinkit": "node blinkit/src/server.js",
+    "start:bigbasket": "node bigbasket/src/server.js",
+    "start:jiomart": "node jiomart/src/server.js",
     "test:zepto": "node zepto/test/test_endpoints.js",
     "test:instamart": "node instamart/test/test_endpoints.js",
     "test:blinkit": "node blinkit/test/test_endpoints.js",
+    "test:bigbasket": "node bigbasket/test/test_endpoints.js",
+    "test:jiomart": "node jiomart/test/test_endpoints.js",
     "bench:zepto": "node zepto/test/bulk_test.js",
     "bench:instamart": "node instamart/test/bulk_test.js",
     "bench:blinkit": "node blinkit/test/bulk_test.js",
-    "test": "npm run test:zepto && npm run test:instamart && npm run test:blinkit"
+    "bench:bigbasket": "node bigbasket/test/bulk_test.js",
+    "bench:jiomart": "node jiomart/test/bulk_test.js",
+    "test": "npm run test:zepto && npm run test:instamart && npm run test:blinkit && npm run test:bigbasket && npm run test:jiomart"
   },
   "dependencies": {
     "cors": "^2.8.5",

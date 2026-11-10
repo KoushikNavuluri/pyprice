@@ -1,0 +1,18 @@
+{
+  "name": "unofficial-bigbasket-api",
+  "version": "1.0.0",
+  "description": "Production-grade unofficial BigBasket (bbnow) API server and SDK for programmatic product search, dark store hub discovery, categories, pricing, and location serviceability",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node test/test_endpoints.js",
+    "bench": "node test/bulk_test.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0"
+  }
+}
