@@ -1,12 +1,17 @@
 {
-  "name": "unofficial-zepto-api",
-  "version": "1.0.0",
-  "description": "Production-grade unofficial Zepto API server and SDK for programmatic product search, catalog navigation, store discovery, and location validation",
-  "main": "src/server.js",
+  "name": "pyprice",
+  "version": "1.1.0",
+  "description": "Unified Quick-Commerce Intelligence Engine and Unofficial API Suite for Zepto and Swiggy Instamart",
+  "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/server.js",
-    "test": "node test/test_endpoints.js"
+    "start:zepto": "node zepto/src/server.js",
+    "start:instamart": "node instamart/src/server.js",
+    "test:zepto": "node zepto/test/test_endpoints.js",
+    "test:instamart": "node instamart/test/test_endpoints.js",
+    "bench:zepto": "node zepto/test/bulk_test.js",
+    "bench:instamart": "node instamart/test/bulk_test.js",
+    "test": "npm run test:zepto && npm run test:instamart"
   },
   "dependencies": {
     "cors": "^2.8.5",
