@@ -1,17 +1,20 @@
 {
   "name": "pyprice",
-  "version": "1.1.0",
-  "description": "Unified Quick-Commerce Intelligence Engine and Unofficial API Suite for Zepto and Swiggy Instamart",
+  "version": "1.2.0",
+  "description": "Unified Quick-Commerce Intelligence Engine and Unofficial API Suite for Zepto, Swiggy Instamart, and Blinkit",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start:zepto": "node zepto/src/server.js",
     "start:instamart": "node instamart/src/server.js",
+    "start:blinkit": "node blinkit/src/server.js",
     "test:zepto": "node zepto/test/test_endpoints.js",
     "test:instamart": "node instamart/test/test_endpoints.js",
+    "test:blinkit": "node blinkit/test/test_endpoints.js",
     "bench:zepto": "node zepto/test/bulk_test.js",
     "bench:instamart": "node instamart/test/bulk_test.js",
-    "test": "npm run test:zepto && npm run test:instamart"
+    "bench:blinkit": "node blinkit/test/bulk_test.js",
+    "test": "npm run test:zepto && npm run test:instamart && npm run test:blinkit"
   },
   "dependencies": {
     "cors": "^2.8.5",
