@@ -25,12 +25,11 @@ export class JioMartCatalogService {
 
     if (query && query.trim().length > 0) {
       const q = query.toLowerCase().trim();
-      items = items.filter(p =>
-        p.name.toLowerCase().includes(q) ||
-        p.brand.name.toLowerCase().includes(q) ||
-        p.categories.some(c => c.name.toLowerCase().includes(q)) ||
-        (p.description && p.description.toLowerCase().includes(q))
-      );
+      const tokens = q.split(/\s+/).filter(Boolean);
+      items = items.filter(p => {
+        const text = `${p.name} ${p.brand?.name || ''} ${p.categories.map(c => c.name).join(' ')} ${p.description || ''}`.toLowerCase();
+        return tokens.every(token => text.includes(token));
+      });
     }
 
     if (brand) {

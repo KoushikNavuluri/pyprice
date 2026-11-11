@@ -63,10 +63,33 @@ export class BlinkitAPIClient {
     return res.data;
   }
 
+  async setLocation({ address = null, pincode = null, latitude = null, longitude = null } = {}) {
+    let locResult = null;
+    if (latitude && longitude) {
+      locResult = await this.checkServiceabilityByCoords(latitude, longitude);
+    } else if (pincode) {
+      locResult = await this.checkServiceabilityByPincode(pincode);
+    } else if (address) {
+      const addrs = await this.searchAddress(address);
+      if (addrs && addrs.length > 0) {
+        locResult = await this.checkServiceabilityByCoords(addrs[0].latitude, addrs[0].longitude);
+      }
+    }
+    if (locResult?.serviceable && locResult?.primaryStore) {
+      this.storeId = locResult.primaryStore.storeId;
+      return { serviceable: true, store: locResult.primaryStore };
+    }
+    return { serviceable: false, reason: locResult?.message || 'Location not serviceable' };
+  }
+
   // 3. Product Search & Autocomplete
   async searchProducts({
     query = "",
     storeId = null,
+    pincode = null,
+    latitude = null,
+    longitude = null,
+    address = null,
     category = null,
     subCategory = null,
     brand = null,
@@ -79,7 +102,12 @@ export class BlinkitAPIClient {
   } = {}) {
     const params = new URLSearchParams();
     if (query) params.append('q', query);
-    if (storeId) params.append('storeId', storeId);
+    const effectiveStore = storeId || this.storeId;
+    if (effectiveStore) params.append('storeId', effectiveStore);
+    if (pincode) params.append('pincode', pincode);
+    if (latitude) params.append('latitude', latitude);
+    if (longitude) params.append('longitude', longitude);
+    if (address) params.append('address', address);
     if (category) params.append('category', category);
     if (subCategory) params.append('subCategory', subCategory);
     if (brand) params.append('brand', brand);

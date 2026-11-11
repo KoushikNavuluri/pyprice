@@ -67,10 +67,35 @@ export class BigBasketAPIClient {
     return this.getHubs(city);
   }
 
+  async setLocation({ address = null, pincode = null, latitude = null, longitude = null } = {}) {
+    let locResult = null;
+    if (latitude && longitude) {
+      locResult = await this.checkServiceabilityByCoords(latitude, longitude);
+    } else if (pincode) {
+      locResult = await this.checkServiceabilityByPincode(pincode);
+    } else if (address) {
+      const addrs = await this.searchAddress(address);
+      if (addrs && addrs.length > 0) {
+        const lat = addrs[0].latitude || addrs[0].lat;
+        const lng = addrs[0].longitude || addrs[0].lng;
+        locResult = await this.checkServiceabilityByCoords(lat, lng);
+      }
+    }
+    if (locResult?.serviceable && locResult?.primaryHub) {
+      this.hubId = locResult.primaryHub.hubId;
+      return { serviceable: true, hub: locResult.primaryHub };
+    }
+    return { serviceable: false, reason: locResult?.message || 'Location not serviceable' };
+  }
+
   // 3. Product Search & Autocomplete
   async searchProducts({
     query = "",
     hubId = null,
+    pincode = null,
+    latitude = null,
+    longitude = null,
+    address = null,
     category = null,
     subCategory = null,
     brand = null,
@@ -83,7 +108,12 @@ export class BigBasketAPIClient {
   } = {}) {
     const params = new URLSearchParams();
     if (query) params.append('q', query);
-    if (hubId) params.append('hubId', hubId);
+    const effectiveHub = hubId || this.hubId;
+    if (effectiveHub) params.append('hubId', effectiveHub);
+    if (pincode) params.append('pincode', pincode);
+    if (latitude) params.append('latitude', latitude);
+    if (longitude) params.append('longitude', longitude);
+    if (address) params.append('address', address);
     if (category) params.append('category', category);
     if (subCategory) params.append('subCategory', subCategory);
     if (brand) params.append('brand', brand);

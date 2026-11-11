@@ -142,12 +142,12 @@ const COMMON_ADDRESS_SUGGESTIONS = [
 export function searchAddresses(query) {
   const q = String(query).toLowerCase().trim();
   if (!q) return [];
+  const tokens = q.split(/[\s,]+/).filter(Boolean);
 
-  return COMMON_ADDRESS_SUGGESTIONS.filter(addr =>
-    addr.mainText.toLowerCase().includes(q) ||
-    addr.secondaryText.toLowerCase().includes(q) ||
-    addr.pincode.includes(q)
-  );
+  return COMMON_ADDRESS_SUGGESTIONS.filter(addr => {
+    const full = `${addr.mainText} ${addr.secondaryText} ${addr.city} ${addr.pincode}`.toLowerCase();
+    return tokens.every(token => full.includes(token));
+  });
 }
 
 export function getHubs(city = null) {

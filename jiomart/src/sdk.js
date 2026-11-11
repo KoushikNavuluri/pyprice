@@ -75,9 +75,44 @@ export class JioMartClient {
     return this._request(`/ext/jmshipmentfee/delivery_fee/v1.0/quote?store_code=${storeCode}`);
   }
 
+  async setLocation({ address = null, pincode = null, latitude = null, longitude = null } = {}) {
+    let locResult = null;
+    if (latitude && longitude) {
+      locResult = await this.resolveCoordinates(latitude, longitude);
+      if (locResult?.serviceable && locResult?.nearestStore) {
+        this.storeId = locResult.nearestStore.code;
+        return { serviceable: true, store: locResult.nearestStore };
+      }
+    } else if (pincode) {
+      locResult = await this.resolvePincode(pincode);
+      if (locResult?.valid && locResult?.serviceable && locResult?.store) {
+        this.storeId = locResult.store.code;
+        return { serviceable: true, store: locResult.store };
+      }
+    } else if (address) {
+      const resp = await this.searchLocation(address);
+      const addrs = Array.isArray(resp) ? resp : (resp?.results || resp?.data || []);
+      if (addrs && addrs.length > 0) {
+        const lat = addrs[0].lat || addrs[0].latitude;
+        const lng = addrs[0].lng || addrs[0].longitude;
+        locResult = await this.resolveCoordinates(lat, lng);
+        if (locResult?.serviceable && locResult?.nearestStore) {
+          this.storeId = locResult.nearestStore.code;
+          return { serviceable: true, store: locResult.nearestStore };
+        }
+      }
+    }
+    return { serviceable: false, reason: locResult?.error || 'Location not serviceable' };
+  }
+
   // Catalog & Search
   async searchProducts({
     query = '',
+    storeId = null,
+    pincode = null,
+    latitude = null,
+    longitude = null,
+    address = null,
     brand = null,
     category = null,
     minPrice = null,
@@ -89,6 +124,12 @@ export class JioMartClient {
   } = {}) {
     const params = new URLSearchParams();
     if (query) params.append('q', query);
+    const effectiveStore = storeId || this.storeId;
+    if (effectiveStore) params.append('storeId', effectiveStore);
+    if (pincode) params.append('pincode', pincode);
+    if (latitude) params.append('latitude', latitude);
+    if (longitude) params.append('longitude', longitude);
+    if (address) params.append('address', address);
     if (brand) params.append('brand', brand);
     if (category) params.append('category', category);
     if (minPrice !== null) params.append('minPrice', minPrice);

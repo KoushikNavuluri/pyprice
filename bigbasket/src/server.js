@@ -260,6 +260,10 @@ app.get('/api/v1/products/search', (req, res) => {
     q,
     query,
     hubId,
+    pincode,
+    latitude,
+    longitude,
+    address,
     category,
     subCategory,
     brand,
@@ -272,10 +276,80 @@ app.get('/api/v1/products/search', (req, res) => {
   } = req.query;
 
   const searchQuery = q || query || "";
+  let effectiveHubId = hubId || null;
+  let locationContext = null;
+
+  if (!effectiveHubId) {
+    if (latitude && longitude) {
+      const loc = resolveLocationByCoordinates(parseFloat(latitude), parseFloat(longitude));
+      if (loc.serviceable && loc.primaryHub) {
+        effectiveHubId = loc.primaryHub.hubId;
+        locationContext = {
+          serviceable: true,
+          hubId: loc.primaryHub.hubId,
+          nhid: loc.primaryHub.nhid,
+          storeName: loc.primaryHub.name,
+          etaMinutes: loc.primaryHub.etaMinutes,
+          deliveryFee: loc.primaryHub.deliveryFee,
+          distanceKm: loc.primaryHub.distanceKm
+        };
+      } else {
+        locationContext = { serviceable: false, reason: loc.message || "Location not serviceable" };
+      }
+    } else if (pincode) {
+      const loc = resolveLocationByPincode(pincode);
+      if (loc.serviceable && loc.primaryHub) {
+        effectiveHubId = loc.primaryHub.hubId;
+        locationContext = {
+          serviceable: true,
+          hubId: loc.primaryHub.hubId,
+          nhid: loc.primaryHub.nhid,
+          storeName: loc.primaryHub.name,
+          etaMinutes: loc.primaryHub.etaMinutes,
+          deliveryFee: loc.primaryHub.deliveryFee,
+          pincode
+        };
+      } else {
+        locationContext = { serviceable: false, reason: loc.message || `Pincode ${pincode} not serviceable`, pincode };
+      }
+    } else if (address) {
+      const addrs = searchAddresses(address);
+      if (addrs.length > 0) {
+        const loc = resolveLocationByCoordinates(addrs[0].latitude, addrs[0].longitude);
+        if (loc.serviceable && loc.primaryHub) {
+          effectiveHubId = loc.primaryHub.hubId;
+          locationContext = {
+            serviceable: true,
+            hubId: loc.primaryHub.hubId,
+            nhid: loc.primaryHub.nhid,
+            storeName: loc.primaryHub.name,
+            etaMinutes: loc.primaryHub.etaMinutes,
+            deliveryFee: loc.primaryHub.deliveryFee,
+            distanceKm: loc.primaryHub.distanceKm,
+            matchedAddress: `${addrs[0].mainText}, ${addrs[0].secondaryText}`
+          };
+        }
+      }
+    }
+  }
+
+  if (locationContext && !locationContext.serviceable) {
+    return res.json({
+      status: "success",
+      data: {
+        query: searchQuery || null,
+        hubId: null,
+        locationContext,
+        pagination: { page: 1, limit: limit || 10, totalItems: 0, totalPages: 0 },
+        results: [],
+        message: locationContext.reason || "Location not serviceable"
+      }
+    });
+  }
 
   const results = catalogService.searchProducts({
     query: searchQuery,
-    hubId,
+    hubId: effectiveHubId,
     category,
     subCategory,
     brand,
@@ -286,6 +360,10 @@ app.get('/api/v1/products/search', (req, res) => {
     page: page || 1,
     limit: limit || 10
   });
+
+  if (locationContext) {
+    results.locationContext = locationContext;
+  }
 
   res.json({
     status: "success",

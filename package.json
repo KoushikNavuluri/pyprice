@@ -15,12 +15,13 @@
     "test:blinkit": "node blinkit/test/test_endpoints.js",
     "test:bigbasket": "node bigbasket/test/test_endpoints.js",
     "test:jiomart": "node jiomart/test/test_endpoints.js",
+    "test:location": "node test/test_location_search.js",
     "bench:zepto": "node zepto/test/bulk_test.js",
     "bench:instamart": "node instamart/test/bulk_test.js",
     "bench:blinkit": "node blinkit/test/bulk_test.js",
     "bench:bigbasket": "node bigbasket/test/bulk_test.js",
     "bench:jiomart": "node jiomart/test/bulk_test.js",
-    "test": "npm run test:zepto && npm run test:instamart && npm run test:blinkit && npm run test:bigbasket && npm run test:jiomart"
+    "test": "npm run test:zepto && npm run test:instamart && npm run test:blinkit && npm run test:bigbasket && npm run test:jiomart && npm run test:location"
   },
   "dependencies": {
     "cors": "^2.8.5",

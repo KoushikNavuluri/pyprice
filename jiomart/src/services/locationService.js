@@ -140,11 +140,12 @@ export class JioMartLocationService {
       { area: "DLF Cyber City, Phase 2", city: "Gurugram", state: "Haryana", pincode: "122002", lat: 28.4906, lng: 77.0903 }
     ];
 
-    return candidates.filter(c =>
-      c.area.toLowerCase().includes(q) ||
-      c.city.toLowerCase().includes(q) ||
-      c.pincode.includes(q)
-    ).map(c => ({
+    const tokens = q.split(/[\s,]+/).filter(Boolean);
+
+    return candidates.filter(c => {
+      const full = `${c.area} ${c.city} ${c.state} ${c.pincode}`.toLowerCase();
+      return tokens.every(token => full.includes(token));
+    }).map(c => ({
       description: `${c.area}, ${c.city}, ${c.state}, India`,
       area: c.area,
       city: c.city,

@@ -32,7 +32,9 @@ export class CatalogService {
       // Keyword matching across title, brand, description, and subcategory
       if (q) {
         const textToSearch = `${item.displayName} ${item.brand} ${item.category} ${item.subCategory} ${item.description}`.toLowerCase();
-        if (!textToSearch.includes(q)) return false;
+        const tokens = q.split(/\s+/).filter(Boolean);
+        const matchesAll = tokens.every(token => textToSearch.includes(token));
+        if (!matchesAll) return false;
       }
 
       // Category filter

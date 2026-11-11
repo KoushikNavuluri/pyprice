@@ -5,6 +5,57 @@
 
 export const JIOMART_PRODUCTS = [
   {
+    uid: 7529360,
+    name: "Amul Salted Butter 500 g",
+    slug: "amul-salted-butter-500-g-7529360",
+    item_code: "590000530",
+    brand: {
+      uid: 245,
+      name: "Amul",
+      slug: "amul",
+      logo: "https://cdn.pixelbin.io/v2/catalog-cloud-non-prod/original/BizbZdLqn-logo.png"
+    },
+    department: {
+      uid: 1,
+      name: "Groceries",
+      slug: "groceries"
+    },
+    categories: [
+      { uid: 10416, name: "Dairy & Bakery", slug: "dairy-bakery" },
+      { uid: 1041602, name: "Butter & Spreads", slug: "butter-spreads" }
+    ],
+    category_map: {
+      l1: { uid: 10416, name: "Dairy & Bakery" },
+      l2: { uid: 1041602, name: "Butter & Spreads" }
+    },
+    attributes: {
+      net_quantity: "500 g",
+      food_type: "Vegetarian",
+      shelf_life: "9 Months"
+    },
+    price: {
+      marked: { min: 285, max: 285 },
+      effective: { min: 275, max: 275 },
+      currency_symbol: "₹",
+      currency_code: "INR",
+      discount: "₹10 OFF",
+      discount_percentage: 3.5
+    },
+    availability: {
+      in_stock: true,
+      deliverable: true,
+      is_active: true
+    },
+    media: [
+      {
+        type: "image",
+        url: "https://www.jiomart.com/images/product/original/490001392/amul-butter-500-g-carton-product-images-o490001392-p490001392-0-202203170726.jpg",
+        alt: "Amul Salted Butter 500 g"
+      }
+    ],
+    description: "Amul Butter is an iconic, delicious butter made from fresh cream."
+  },
+  {
     uid: 7529366,
     name: "Amul Taaza Toned Milky Milk 500 ml",
     slug: "amul-taaza-toned-milky-milk-500-ml-mffn43-7529366",

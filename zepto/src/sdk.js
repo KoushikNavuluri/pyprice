@@ -62,6 +62,25 @@ export class ZeptoAPIClient {
     return this._request(`/api/v1/stores/${storeId}`);
   }
 
+  async setLocation({ address = null, pincode = null, latitude = null, longitude = null } = {}) {
+    let locResult = null;
+    if (latitude && longitude) {
+      locResult = await this.checkServiceabilityByCoords(latitude, longitude);
+    } else if (pincode) {
+      locResult = await this.checkServiceabilityByPincode(pincode);
+    } else if (address) {
+      const addrs = await this.searchAddress(address);
+      if (addrs && addrs.length > 0) {
+        locResult = await this.checkServiceabilityByCoords(addrs[0].latitude, addrs[0].longitude);
+      }
+    }
+    if (locResult?.serviceable && locResult?.primaryStore) {
+      this.storeId = locResult.primaryStore.storeId;
+      return { serviceable: true, store: locResult.primaryStore };
+    }
+    return { serviceable: false, reason: locResult?.unserviceableReason || 'Location not serviceable' };
+  }
+
   // Catalog & Search APIs
   async searchProducts({
     query = '',
@@ -73,7 +92,11 @@ export class ZeptoAPIClient {
     sortBy = 'relevance',
     page = 1,
     limit = 10,
-    storeId = null
+    storeId = null,
+    pincode = null,
+    latitude = null,
+    longitude = null,
+    address = null
   } = {}) {
     const params = new URLSearchParams();
     if (query) params.set('q', query);
@@ -88,6 +111,10 @@ export class ZeptoAPIClient {
     
     const effectiveStore = storeId || this.storeId;
     if (effectiveStore) params.set('storeId', effectiveStore);
+    if (pincode) params.set('pincode', pincode);
+    if (latitude) params.set('latitude', latitude);
+    if (longitude) params.set('longitude', longitude);
+    if (address) params.set('address', address);
 
     return this._request(`/api/v1/products/search?${params.toString()}`);
   }
